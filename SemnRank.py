@@ -49,18 +49,16 @@ def read_bio_data(file_path):
 
 
 def get_embeddings(sentences, tokenizer, model, device):
-    """Encode sentences into embeddings using ALBERT."""
     texts = [' '.join(sentence['tokens']) for sentence in sentences]
     inputs = tokenizer(texts, padding=True, truncation=True, return_tensors='pt')
     inputs = {k: v.to(device) for k, v in inputs.items()}
     with torch.no_grad():
         outputs = model(**inputs)
     # Use the [CLS] token embedding
-    cls_embeddings = outputs.last_hidden_state[:, 0, :]  # Shape: (batch_size, hidden_size)
-    return cls_embeddings  # Return torch tensor on device
+    cls_embeddings = outputs.last_hidden_state[:, 0, :] 
+    return cls_embeddings 
 
 def compute_equiv(a_tokens, b_tokens):
-    """Compute Equiv(a, b) using GPT-4."""
     a_text = ' '.join(a_tokens)
     b_text = ' '.join(b_tokens)
     prompt = f"Do the following two sentences convey the same meaning?\n\nSentence 1: {a_text}\nSentence 2: {b_text}\n\n Only Answer 'Yes' or 'No'."
